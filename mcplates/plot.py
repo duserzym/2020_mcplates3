@@ -111,19 +111,19 @@ def plot_distribution(ax, lon_samples, lat_samples, to_plot='d', resolution=30, 
             lon_samples, lat_samples, resolution)
         density = ma.masked_where(density <= 0.05*density.max(), density)
         a = ax.pcolormesh(lon_grid, lat_grid, density, cmap=cmap,
-                          transform=ccrs.PlateCarree(), **kwargs)
+                          transform=ccrs.Geodetic(), **kwargs)
         artists.append(a)
 
     if 'e' in to_plot:
         lon_grid, lat_grid, cumulative_density = cumulative_density_distribution(
             lon_samples, lat_samples, resolution)
         a = ax.contour(lon_grid, lat_grid, cumulative_density, levels=[
-                       0.683, 0.955], cmap=cmap, transform=ccrs.PlateCarree())
+                       0.683, 0.955], cmap=cmap, transform=ccrs.Geodetic())
         artists.append(a)
 
     if 's' in to_plot:
         a = ax.scatter(lon_samples, lat_samples, color=cmap(
-            [0., 0.5, 1.])[-1], alpha=0.1, transform=ccrs.PlateCarree(), edgecolors=None, **kwargs)
+            [0., 0.5, 1.])[-1], alpha=0.1, transform=ccrs.Geodetic(), edgecolors=None, **kwargs)
         artists.append(a)
 
     return artists
@@ -155,5 +155,5 @@ def plot_continent( ax, name, rotation_pole=None, angle=0.,  **kwargs):
     lon_lat = np.array(lon_lat)
     # Sometimes the last point messes up the plot (for reasons I don't understand).
     # Just exclude it.
-    artist = ax.plot( lon_lat[:-1,0], lon_lat[:-1,1] , transform=ccrs.PlateCarree(), **kwargs)
+    artist = ax.plot( lon_lat[:-1,0], lon_lat[:-1,1] , transform=ccrs.Geodetic(), **kwargs)
     return artist

@@ -70,35 +70,62 @@ class Pole(object):
     def add(self, pole):
         self._pole = self._pole + pole._pole
 
+#     def plot(self, axes, south_pole=False, **kwargs):
+#         artists = []
+#         if self._angular_error is not None:
+#             lons = [0, 45, 90, 135, 180, 225, 270, 315, 360]
+#             lats = np.ones_like(lons) * (90. - self._angular_error)
+#             norms = np.ones_like(lons)
+#             vecs = rot.spherical_to_cartesian(lons, lats, norms)
+#             rotation_matrix = rot.construct_euler_rotation_matrix(
+#                 0., (self.colatitude) * rot.d2r, self.longitude * rot.d2r)
+#             rotated_vecs = np.dot(rotation_matrix, vecs)
+#             lons, lats, norms = rot.cartesian_to_spherical(rotated_vecs)
+#             if south_pole is True:
+#                 lons = lons-180.
+#                 lats = -lats
+#             path = matplotlib.path.Path(np.transpose(np.array([lons, lats])))
+#             circ_patch = matplotlib.patches.PathPatch(
+#                 path, transform=ccrs.Geodetic(), alpha=0.5, **kwargs)
+#             circ_artist = axes.add_patch(circ_patch)
+#             artists.append(circ_artist)
+#         if south_pole is False:
+#             artist = axes.scatter(self.longitude, self.latitude,
+#                                   transform=ccrs.Geodetic(), **kwargs)
+#         else:
+#             artist = axes.scatter(self.longitude-180., -self.latitude,
+#                                   transform=ccrs.Geodetic(), **kwargs)
+#         artists.append(artist)
+#         return artists
+    
     def plot(self, axes, south_pole=False, **kwargs):
         artists = []
         if self._angular_error is not None:
-            lons = np.linspace(0., 360., 361.)
+            lons = np.linspace(0, 360, 360)
             lats = np.ones_like(lons) * (90. - self._angular_error)
-            norms = np.ones_like(lons)
-            vecs = rot.spherical_to_cartesian(lons, lats, norms)
+            magnitudes = np.ones_like(lons)
+            
+            vecs = rot.spherical_to_cartesian(lons, lats, magnitudes)
             rotation_matrix = rot.construct_euler_rotation_matrix(
                 0., (self.colatitude) * rot.d2r, self.longitude * rot.d2r)
             rotated_vecs = np.dot(rotation_matrix, vecs)
-            lons, lats, norms = rot.cartesian_to_spherical(rotated_vecs)
+            lons, lats, magnitudes = rot.cartesian_to_spherical(rotated_vecs.tolist())
             if south_pole is True:
                 lons = lons-180.
                 lats = -lats
             path = matplotlib.path.Path(np.transpose(np.array([lons, lats])))
             circ_patch = matplotlib.patches.PathPatch(
-                path, transform=ccrs.PlateCarree(), alpha=0.5, **kwargs)
+                path, transform=ccrs.Geodetic(), alpha=0.5, **kwargs)
             circ_artist = axes.add_patch(circ_patch)
             artists.append(circ_artist)
         if south_pole is False:
             artist = axes.scatter(self.longitude, self.latitude,
-                                  transform=ccrs.PlateCarree(), **kwargs)
+                                  transform=ccrs.Geodetic(), **kwargs)
         else:
             artist = axes.scatter(self.longitude-180., -self.latitude,
-                                  transform=ccrs.PlateCarree(), **kwargs)
+                                  transform=ccrs.Geodetic(), **kwargs)
         artists.append(artist)
         return artists
-
-
 class PlateCentroid(Pole):
     """
     Subclass of Pole which represents the centroid
